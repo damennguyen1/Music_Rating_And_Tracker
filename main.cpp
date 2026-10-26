@@ -30,7 +30,9 @@ int main() {
     std::vector<Entry> entries;
 
     entries.emplace_back("Taylor Swift", "Love Story", 4.5);
-    entries.emplace_back("The Weeknd", "Blinding Lights", 4.9);
+    entries.emplace_back("The Weeknd", "Blinding Lights", 10.0);
+    entries.emplace_back("The Weeknd", "Coming Down", 9.9);
+    entries.emplace_back("The Weeknd", "The Hills", 9.8);
     entries.emplace_back("Drake", "God's Plan", 3.8);
     entries.emplace_back("Adele", "Hello", 4.7);
 
