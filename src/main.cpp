@@ -11,10 +11,12 @@ public:
     double Rating;
     std::string Title;
 
+    // Constructor to initialize the entry
     Entry(std::string artist, std::string title, double rating)
         : Artist(artist), Rating(rating), Title(title) {
     }
 
+    // Function to display the entry in a formatted manner
     void display() const {
         std::cout << std::left
             << std::setw(25) << Artist
@@ -34,6 +36,7 @@ int main() {
     entries.emplace_back("Drake", "God's Plan", 3.8);
     entries.emplace_back("Adele", "Hello", 4.7);
 
+    // Sort entries by rating in descending order
     std::sort(entries.begin(), entries.end(),
         [](const Entry& a, const Entry& b) {
             return a.Rating > b.Rating;
