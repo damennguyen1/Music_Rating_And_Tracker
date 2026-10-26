@@ -1,54 +1,57 @@
+
 #include <iostream>
-#include <sstream>
 #include <string>
+#include <vector>
+#include <algorithm>
+#include <iomanip>
 
-// Day numbers are sequence numbers, not calendar dates.
-constexpr int LOAN_DAYS = 7;
-constexpr int FIRST_CHECKOUT_DAY = 0;
-constexpr int LAST_CHECKOUT_DAY = 365;
+class Entry {
+public:
+    std::string Artist;
+    double Rating;
+    std::string Title;
 
-bool isValidCheckoutDay(int day) {
-    return day >= FIRST_CHECKOUT_DAY && day <= LAST_CHECKOUT_DAY;
-}
+    Entry(std::string artist, std::string title, double rating)
+        : Artist(artist), Rating(rating), Title(title) {
+    }
 
-int calculateDueDay(int checkoutDay, int loanDays) {
-    return checkoutDay + loanDays;
-}
-
-void printLoanSummary(int checkoutDay, int dueDay) {
-    std::cout << "Checkout day: " << checkoutDay << '\n';
-    std::cout << "Due day: " << dueDay << '\n';
-}
+    void display() const {
+        std::cout << std::left
+            << std::setw(25) << Artist
+            << std::setw(30) << Title
+            << std::right
+            << std::fixed << std::setprecision(1)
+            << std::setw(8) << Rating
+            << '\n';
+    }
+};
 
 int main() {
-    std::cout << "Equipment Loan Starter\n";
-    std::cout << "Enter checkout day (" << FIRST_CHECKOUT_DAY
-              << " to " << LAST_CHECKOUT_DAY << "): ";
+    std::vector<Entry> entries;
 
-    std::string input;
-    if (!std::getline(std::cin, input)) {
-        std::cout << "Error: no input was received.\n";
-        return 1;
+    entries.emplace_back("Taylor Swift", "Love Story", 4.5);
+    entries.emplace_back("The Weeknd", "Blinding Lights", 4.9);
+    entries.emplace_back("Drake", "God's Plan", 3.8);
+    entries.emplace_back("Adele", "Hello", 4.7);
+
+    std::sort(entries.begin(), entries.end(),
+        [](const Entry& a, const Entry& b) {
+            return a.Rating > b.Rating;
+        });
+
+    // Print column headers
+    std::cout << std::left
+        << std::setw(25) << "Artist"
+        << std::setw(30) << "Title"
+        << std::right
+        << std::setw(8) << "Rating"
+        << '\n';
+
+    std::cout << std::string(63, '-') << '\n';
+
+    for (const auto& entry : entries) {
+        entry.display();
     }
 
-    std::istringstream parser(input);
-    int checkoutDay = 0;
-    char extra = '\0';
-
-    // Reject missing numbers and extra non-whitespace characters.
-    if (!(parser >> checkoutDay) || (parser >> extra)) {
-        std::cout << "Error: enter one whole-number day.\n";
-        return 1;
-    }
-
-    if (!isValidCheckoutDay(checkoutDay)) {
-        std::cout << "Error: checkout day must be between "
-                  << FIRST_CHECKOUT_DAY << " and "
-                  << LAST_CHECKOUT_DAY << ".\n";
-        return 1;
-    }
-
-    const int dueDay = calculateDueDay(checkoutDay, LOAN_DAYS);
-    printLoanSummary(checkoutDay, dueDay);
     return 0;
 }
