@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <string>
 #include <vector>
@@ -11,10 +10,12 @@ public:
     double Rating;
     std::string Title;
 
+    // Constructor to initialize the entry
     Entry(std::string artist, std::string title, double rating)
         : Artist(artist), Rating(rating), Title(title) {
     }
 
+    // Function to display the entry in a formatted manner
     void display() const {
         std::cout << std::left
             << std::setw(25) << Artist
@@ -22,7 +23,7 @@ public:
             << std::right
             << std::fixed << std::setprecision(1)
             << std::setw(8) << Rating
-            << '\n';
+            << "\n";
     }
 };
 
@@ -30,12 +31,11 @@ int main() {
     std::vector<Entry> entries;
 
     entries.emplace_back("Taylor Swift", "Love Story", 4.5);
-    entries.emplace_back("The Weeknd", "Blinding Lights", 10.0);
-    entries.emplace_back("The Weeknd", "Coming Down", 9.9);
-    entries.emplace_back("The Weeknd", "The Hills", 9.8);
+    entries.emplace_back("The Weeknd", "Blinding Lights", 4.9);
     entries.emplace_back("Drake", "God's Plan", 3.8);
     entries.emplace_back("Adele", "Hello", 4.7);
 
+    // Sort entries by rating in descending order
     std::sort(entries.begin(), entries.end(),
         [](const Entry& a, const Entry& b) {
             return a.Rating > b.Rating;
@@ -47,9 +47,9 @@ int main() {
         << std::setw(30) << "Title"
         << std::right
         << std::setw(8) << "Rating"
-        << '\n';
+        << "\n";
 
-    std::cout << std::string(63, '-') << '\n';
+    std::cout << std::string(63, '-') << "\n";
 
     for (const auto& entry : entries) {
         entry.display();
