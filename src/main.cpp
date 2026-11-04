@@ -1,98 +1,47 @@
 #include <iostream>
-#include <string>
-#include <vector>
-#include <algorithm>
-#include <iomanip>
 #include <limits>
 
-class Entry {
-public:
-    std::string Artist;
-    double Rating;
-    std::string Title;
+#include "MusicItem.h"
+#include "Song.h"
+#include "Album.h"
+#include "Artist.h"
 
-    // Constructor to initialize the entry
-    Entry(std::string artist, std::string title, double rating)
-        : Artist(artist), Rating(rating), Title(title) {
-    }
-
-    // Function to display the entry in a formatted manner
-    void display() const {
-        std::cout << std::left
-            << std::setw(25) << Artist
-            << std::setw(30) << Title
-            << std::right
-            << std::fixed << std::setprecision(1)
-            << std::setw(8) << Rating
-            << "\n";
-    }
-};
-
-void printHeader() {
-    std::cout << std::left
-        << std::setw(25) << "Artist"
-        << std::setw(30) << "Title"
-        << std::right
-        << std::setw(8) << "Rating"
-        << "\n";
-    std::cout << std::string(63, '-') << "\n";
-}
-
-void showTopSongs(std::vector<Entry> entries) {
-    std::sort(entries.begin(), entries.end(),
-        [](const Entry& a, const Entry& b) {
-            return a.Rating > b.Rating;
-        });
-
-    printHeader();
-
-    for (const auto& entry : entries) {
-        entry.display();
-    }
-}
-
-// Each artist's best-rated song, highest first
-void showTopArtists(const std::vector<Entry>& entries) {
-    std::vector<Entry> best;
-    for (const auto& entry : entries) {
-        auto it = std::find_if(best.begin(), best.end(),
-            [&](const Entry& b) { return b.Artist == entry.Artist; });
-        if (it == best.end()) {
-            best.push_back(entry);
-        }
-        else if (entry.Rating > it->Rating) {
-            *it = entry;
-        }
-    }
-    showTopSongs(best);
+// Starting data: one of each kind of item
+void loadSampleMusic(MusicLibrary& entries) {
+    entries.push_back(std::make_unique<Song>("Blinding Lights", "The Weeknd", 10));
+    entries.push_back(std::make_unique<Song>("Hello", "Adele", 9));
+    entries.push_back(std::make_unique<Song>("Love Story", "Taylor Swift", 8));
+    entries.push_back(std::make_unique<Song>("God's Plan", "Drake", 6));
+    entries.push_back(std::make_unique<Album>("After Hours", "The Weeknd", 9, 14));
+    entries.push_back(std::make_unique<Album>("Folklore", "Taylor Swift", 8, 16));
+    entries.push_back(std::make_unique<Artist>("The Weeknd", "Pop", 10));
+    entries.push_back(std::make_unique<Artist>("Adele", "Soul", 9));
 }
 
 int main() {
-    std::vector<Entry> entries;
-
-    entries.emplace_back("Taylor Swift", "Love Story", 4.5);
-    entries.emplace_back("The Weeknd", "Blinding Lights", 4.9);
-    entries.emplace_back("Drake", "God's Plan", 3.8);
-    entries.emplace_back("Adele", "Hello", 4.7);
-
+    MusicLibrary entries;
     int options = 0;
+
+    loadSampleMusic(entries);
+
     do {
-        std::cout << "\nOptions: \n"
-            << "1. Make new playlist \n"
-            << "2. See top artists \n"
-            << "3. See top songs \n"
-            << "4. Exit\n"
-            << "Choose: ";
+        printMenu();
 
         if (!(std::cin >> options)) {
+            if (std::cin.eof()) {
+                break;   // input ended: stop instead of looping forever
+            }
+
             std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cin.ignore(
+                std::numeric_limits<std::streamsize>::max(), '\n');
+
             options = 0;
         }
 
         switch (options) {
         case 1:
-            std::cout << "Make new playlist \n";
+            addSong(entries);
             break;
 
         case 2:
@@ -104,14 +53,19 @@ int main() {
             break;
 
         case 4:
-            std::cout << "Goodbye!" << "\n";
+            showAllMusic(entries);
+            break;
+
+        case 5:
+            std::cout << "Goodbye!\n";
             break;
 
         default:
-            std::cout << "Please enter a number (1 - 4)" << "\n";
+            std::cout << "Please enter a number (1-5).\n";
             break;
         }
-    } while (options != 4);
+
+    } while (options != 5);
 
     return 0;
 }
