@@ -1,18 +1,29 @@
-#ifndef SONG_H
-#define SONG_H
+#pragma once
+#include "MusicItem.h"
 
-INCLUDE "MusicItem.h"
+class Song : public MusicItem {
+private:
+    std::string artist_;
 
-CLASS Song : PUBLIC MusicItem
-PRIVATE :
-genre: string
+public:
+    Song(std::string title, std::string artist, int rating)
+        : MusicItem(std::move(title), rating),
+          artist_(std::move(artist)) {
+        if (artist_.empty())
+            throw std::invalid_argument("Artist cannot be empty");
+    }
 
-PUBLIC :
-Song(title, artist, rating, genre)    // calls MusicItem constructor
-getGenre() const->string
+    std::string type() const override {
+        return "Song";
+    }
 
-describe() const OVERRIDE->string
-toFileLine() const OVERRIDE->string
-typeName() const OVERRIDE->string
+    std::string artistName() const override {
+        return artist_;
+    }
 
-#endif
+    void displayInfo(std::ostream& out) const override {
+        out << "[Song] " << title_
+            << " by " << artist_
+            << " | Rating: " << rating_ << "/10";
+    }
+};
