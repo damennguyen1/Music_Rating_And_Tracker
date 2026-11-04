@@ -8,7 +8,8 @@ private:
 public:
     Artist(std::string name, std::string genre, int rating)
         : MusicItem(std::move(name), rating),
-          genre_(std::move(genre)) {
+        genre_(std::move(genre)) {
+
         if (genre_.empty())
             throw std::invalid_argument("Genre cannot be empty");
     }
