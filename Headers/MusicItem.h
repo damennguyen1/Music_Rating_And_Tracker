@@ -1,29 +1,47 @@
-#ifndef MUSICITEM_H
-#define MUSICITEM_H
+#pragma once
+#include <string>
+#include <iostream>
+#include <stdexcept>
+#include <utility>
 
-INCLUDE <string>
+class MusicItem {
+protected:
+    std::string title_;
+    int rating_;
 
-ABSTRACT CLASS MusicItem
-PRIVATE :
-title: string
-artist : string
-rating : int
+public:
+    MusicItem(std::string title, int rating)
+        : title_(std::move(title)), rating_(rating) {
+        if (title_.empty())
+            throw std::invalid_argument("Title cannot be empty");
 
-PUBLIC :
-MusicItem(title, artist, rating)      // validates, throws invalid_argument
-VIRTUAL ~MusicItem() = default        // required for delete through base pointer
+        if (rating_ < 1 || rating_ > 10)
+            throw std::invalid_argument("Rating must be between 1 and 10");
+    }
 
-getTitle() const->string
-getArtist() const->string
-getRating() const -> int
-setRating(newRating)                  // validates, throws invalid_argument
+    virtual ~MusicItem() = default;
 
-PURE VIRTUAL describe() const->string
-PURE VIRTUAL toFileLine() const->string
-PURE VIRTUAL typeName() const->string
+    virtual void displayInfo(std::ostream& out) const = 0;
+    virtual std::string type() const = 0;
+    virtual std::string artistName() const = 0;
 
-// Two items are equal if title and artist match (ignoring case).
-// RankedList uses this to reject duplicates.
-operator==(other: MusicItem) const -> bool
+    virtual int trackCount() const {
+        return 0;
+    }
 
-#endif
+    const std::string& title() const {
+        return title_;
+    }
+
+    int rating() const {
+        return rating_;
+    }
+
+    void setRating(int rating) {
+        if (rating < 1 || rating > 10)
+            throw std::invalid_argument("Rating must be between 1 and 10");
+
+        rating_ = rating;
+    }
+};
+
