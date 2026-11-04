@@ -180,6 +180,32 @@ inline void showTopArtists(const MusicLibrary& entries) {
     }
 }
 
+// Sort and display all albums
+inline void showTopAlbums(const MusicLibrary& entries) {
+    std::vector<const MusicItem*> albums;
+
+    for (const auto& entry : entries) {
+        if (entry->type() == "Album") {
+            albums.push_back(entry.get());
+        }
+    }
+
+    // stable_sort keeps equal ratings in the order they were added
+    std::stable_sort(albums.begin(), albums.end(),
+        [](const MusicItem* a, const MusicItem* b) {
+            return a->rating() > b->rating();
+        });
+
+    printHeader();
+
+    if (albums.empty()) {
+        std::cout << "(no albums yet)\n";
+    }
+
+    for (const auto* album : albums) {
+        displayEntry(*album);
+    }
+}
 // Show every item. displayInfo is a pure virtual function, so each
 // Song, Album, and Artist prints itself in its own format.
 inline void showAllMusic(const MusicLibrary& entries) {
@@ -198,10 +224,12 @@ inline void showAllMusic(const MusicLibrary& entries) {
 inline void printMenu() {
     std::cout << "\n===== MUSIC PLAYLIST =====\n"
         << "1. Add song\n"
-        << "2. See top artists\n"
-        << "3. See top songs\n"
-        << "4. See all music\n"
-        << "5. Exit\n"
+        << "2. Add album\n"
+        << "3. See top artists\n"
+        << "4. See top songs\n"
+        << "5. See top albums\n"
+        << "6. See all music\n"
+        << "7. Exit\n"
         << "Choose: ";
 }
 
