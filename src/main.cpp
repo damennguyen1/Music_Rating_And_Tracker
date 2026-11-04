@@ -6,7 +6,6 @@
 #include "Album.h"
 #include "Artist.h"
 
-// Starting data: one of each kind of item
 void loadSampleMusic(MusicLibrary& entries) {
     entries.push_back(std::make_unique<Song>("Blinding Lights", "The Weeknd", 10));
     entries.push_back(std::make_unique<Song>("Hello", "Adele", 9));
@@ -29,7 +28,7 @@ int main() {
 
         if (!(std::cin >> options)) {
             if (std::cin.eof()) {
-                break;   // input ended: stop instead of looping forever
+                break;   
             }
 
             std::cin.clear();
