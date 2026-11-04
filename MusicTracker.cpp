@@ -6,6 +6,7 @@
 #include "Album.h"
 #include "Artist.h"
 
+// Test Sample Music Library
 void loadSampleMusic(MusicLibrary& entries) {
     entries.push_back(std::make_unique<Song>("Blinding Lights", "The Weeknd", 10));
     entries.push_back(std::make_unique<Song>("Hello", "Adele", 9));
