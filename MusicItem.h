@@ -63,6 +63,25 @@ inline std::string lowerCase(std::string text) {
     return text;
 }
 
+// Return items of one type ordered from highest to lowest rating.
+inline std::vector<const MusicItem*> getRankedItems(
+    const MusicLibrary& entries, const std::string& type) {
+    std::vector<const MusicItem*> items;
+
+    for (const auto& entry : entries) {
+        if (entry->type() == type) {
+            items.push_back(entry.get());
+        }
+    }
+
+    std::stable_sort(items.begin(), items.end(),
+        [](const MusicItem* left, const MusicItem* right) {
+            return left->rating() > right->rating();
+        });
+
+    return items;
+}
+
 // Display the table header
 inline void printHeader() {
     std::cout << std::left
