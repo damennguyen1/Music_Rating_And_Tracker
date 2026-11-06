@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="MusicTracker.vcxproj" Id="9ec1dfb9-0504-4b9b-94c7-78fe4bc335b2" />
+  <Project Path="MusicTracker.vcxproj" />
 </Solution>

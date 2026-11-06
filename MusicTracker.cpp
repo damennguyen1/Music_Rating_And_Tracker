@@ -1,17 +1,12 @@
-#include <QApplication>
-#include <QHeaderView>
-#include <QMainWindow>
-#include <QMessageBox>
-#include <QTableWidget>
-#include <QTableWidgetItem>
+#include <iostream>
+#include <limits>
 
 #include "MusicItem.h"
 #include "Song.h"
 #include "Album.h"
 #include "Artist.h"
-#include "ui_MusicTracker.h"
 
-// Add example entries shown when the application starts.
+// Test Sample Music Library
 void loadSampleMusic(MusicLibrary& entries) {
     entries.push_back(std::make_unique<Song>("Blinding Lights", "The Weeknd", 10));
     entries.push_back(std::make_unique<Song>("Hello", "Adele", 9));
@@ -23,69 +18,60 @@ void loadSampleMusic(MusicLibrary& entries) {
     entries.push_back(std::make_unique<Artist>("Adele", "Soul", 9));
 }
 
-class MainWindow final : public QMainWindow {
-public:
-    // Build the window and connect its controls.
-    MainWindow() {
-        ui_.setupUi(this);
-        ui_.tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+int main() {
+    MusicLibrary entries;
+    int options = 0;
 
-        // Connect UI actions to the functions that handle them.
-        connect(ui_.filterComboBox, &QComboBox::currentTextChanged, this, [this](const QString&) { refresh(); });
-        connect(ui_.addSongButton, &QPushButton::clicked, this, [this] {
-            ::addSong(entries_, this);
-            refresh();
-        });
-        connect(ui_.addAlbumButton, &QPushButton::clicked, this, [this] {
-            ::addAlbum(entries_, this);
-            refresh();
-        });
-        connect(ui_.artistsButton, &QPushButton::clicked, this, [this] { showRanking("Artist"); });
-        connect(ui_.songsButton, &QPushButton::clicked, this, [this] { showRanking("Song"); });
-        connect(ui_.albumsButton, &QPushButton::clicked, this, [this] { showRanking("Album"); });
+    loadSampleMusic(entries);
 
-        loadSampleMusic(entries_);
-        refresh();
-    }
+    do {
+        printMenu();
 
-private:
-    MusicLibrary entries_;
-    Ui::MainWindow ui_;
+        if (!(std::cin >> options)) {
+            if (std::cin.eof()) {
+                break;   
+            }
 
-    // Rebuild the table using the selected type filter.
-    void refresh() {
-        const QString selected = ui_.filterComboBox->currentText();
-        ui_.tableWidget->setRowCount(0);
-        for (const auto& entry : entries_) {
-            if (selected != "All" && QString::fromStdString(entry->type()) != selected)
-                continue;
+            std::cin.clear();
+            std::cin.ignore(
+                std::numeric_limits<std::streamsize>::max(), '\n');
 
-            const int row = ui_.tableWidget->rowCount();
-            ui_.tableWidget->insertRow(row);
-            ui_.tableWidget->setItem(row, 0, new QTableWidgetItem(QString::fromStdString(entry->type())));
-            ui_.tableWidget->setItem(row, 1, new QTableWidgetItem(QString::fromStdString(entry->title())));
-            ui_.tableWidget->setItem(row, 2, new QTableWidgetItem(QString::fromStdString(entry->artistName())));
-            ui_.tableWidget->setItem(row, 3, new QTableWidgetItem(QString::number(entry->rating()) + "/10"));
-            ui_.tableWidget->setItem(row, 4, new QTableWidgetItem(entry->trackCount() ? QString::number(entry->trackCount()) : "-"));
+            options = 0;
         }
-    }
 
-    // Display entries of one type ordered by rating.
-    void showRanking(const QString& type) {
-        auto items = getRankedItems(entries_, type.toStdString());
+        switch (options) {
+        case 1:
+            addSong(entries);
+            break;
 
-        QString text;
-        for (const auto* item : items)
-            text += QString("%1 — %2 (%3/10)\n").arg(QString::fromStdString(item->title()),
-                QString::fromStdString(item->artistName())).arg(item->rating());
-        QMessageBox::information(this, "Top " + type + "s", text.isEmpty() ? "No entries yet." : text);
-    }
-};
+        case 2:
+            addAlbum(entries);
+            break;
+        case 3:
+            showTopArtists(entries);
+            break;
 
-// Start the Qt application and show the main window.
-int main(int argc, char* argv[]) {
-    QApplication app(argc, argv);
-    MainWindow window;
-    window.show();
-    return app.exec();
+        case 4:
+            showTopSongs(entries);
+            break;
+
+        case 5:
+            showTopAlbums(entries);
+            break;
+
+        case 6:
+            showAllMusic(entries);
+            break;
+
+        case 7:
+            std::cout << "Goodbye!\n";
+            break;
+        default:
+            std::cout << "Please enter a number (1-7).\n";
+            break;
+        }
+
+    } while (options != 7);
+
+    return 0;
 }

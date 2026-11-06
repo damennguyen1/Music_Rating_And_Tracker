@@ -1,8 +1,4 @@
 #pragma once
-#include <QInputDialog>
-#include <QLineEdit>
-#include <QMessageBox>
-#include <QWidget>
 #include "MusicItem.h"
 
 class Album : public MusicItem {
@@ -71,26 +67,7 @@ inline int getTrackCount() {
     }
 }
 
-// Add an album using values that have already been collected.
-inline void addAlbum(MusicLibrary& entries, const std::string& title,
-    const std::string& artist, int rating, int tracks) {
-    auto album = std::make_unique<Album>(title, artist, rating, tracks);
-
-    bool duplicate = std::any_of(entries.begin(), entries.end(),
-        [&](const std::unique_ptr<MusicItem>& e) {
-            return e->type() == album->type()
-                && lowerCase(e->title()) == lowerCase(album->title())
-                && lowerCase(e->artistName()) == lowerCase(album->artistName());
-        });
-
-    if (duplicate) {
-        throw std::invalid_argument("That album is already in the library");
-    }
-
-    entries.push_back(std::move(album));
-}
-
-// Create a new album from console input.
+// Create a new album
 inline void addAlbum(MusicLibrary& entries) {
     std::string title;
     std::string artist;
@@ -108,37 +85,24 @@ inline void addAlbum(MusicLibrary& entries) {
     int tracks = getTrackCount();
 
     try {
-        ::addAlbum(entries, title, artist, rating, tracks);
+        // The constructor validates title, artist, rating, and track count first.
+        auto album = std::make_unique<Album>(title, artist, rating, tracks);
+
+        bool duplicate = std::any_of(entries.begin(), entries.end(),
+            [&](const std::unique_ptr<MusicItem>& e) {
+                return e->type() == album->type()
+                    && lowerCase(e->title()) == lowerCase(album->title())
+                    && lowerCase(e->artistName()) == lowerCase(album->artistName());
+            });
+
+        if (duplicate) {
+            throw std::invalid_argument("That album is already in the library");
+        }
+
+        entries.push_back(std::move(album));
         std::cout << "Album successfully added!\n";
     }
     catch (const std::invalid_argument& e) {
         std::cout << "Error: " << e.what() << "\n";
-    }
-}
-
-// Create a new album from Qt input.
-inline void addAlbum(MusicLibrary& entries, QWidget* parent) {
-    bool ok = false;
-    QString title = QInputDialog::getText(
-        parent, "Add Album", "Title:", QLineEdit::Normal, {}, &ok);
-    if (!ok) return;
-
-    QString artist = QInputDialog::getText(
-        parent, "Add Album", "Artist:", QLineEdit::Normal, {}, &ok);
-    if (!ok) return;
-
-    int rating = QInputDialog::getInt(
-        parent, "Add Album", "Rating (1-10):", 5, 1, 10, 1, &ok);
-    if (!ok) return;
-
-    int tracks = QInputDialog::getInt(
-        parent, "Add Album", "Number of tracks:", 1, 1, 999, 1, &ok);
-    if (!ok) return;
-
-    try {
-        ::addAlbum(entries, title.toStdString(), artist.toStdString(), rating, tracks);
-    }
-    catch (const std::invalid_argument& error) {
-        QMessageBox::warning(parent, "Unable to add album", error.what());
     }
 }
