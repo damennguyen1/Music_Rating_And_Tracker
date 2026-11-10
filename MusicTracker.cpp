@@ -78,7 +78,12 @@ private:
         for (const auto* item : items)
             text += QString("%1 — %2 (%3/10)\n").arg(QString::fromStdString(item->title()),
                 QString::fromStdString(item->artistName())).arg(item->rating());
-        QMessageBox::information(this, "Top " + type + "s", text.isEmpty() ? "No entries yet." : text);
+        
+        QString message = text.isEmpty()
+            ? "No " + type.toLower() + " entries found. Add one to see rankings."
+            : text;
+        
+        QMessageBox::information(this, "Top " + type + "s", message);
     }
 };
 
